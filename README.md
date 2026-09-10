@@ -1,50 +1,118 @@
-# MatteSkolan App
+# MatteSkolan App 📚
 
-A desktop and Android app packaging project for MatteSkolan.
+Desktop- och Android-paketering för **MatteSkolan**.
 
-## Outputs
+## 🚀 Snabbstart
 
-The GitHub Actions workflow builds three desktop packages independently:
-
-- Windows: NSIS installer + portable build
-- Linux: AppImage + Debian package
-- macOS: DMG
-
-It also builds a separate Android debug APK named `MatteSkolan-debug.apk`.
-
-Each build bundles the current contents of the public `OskarFisk/matte-skolan` project at build time, including its procedural math engine, school UI, games, drawing workspace, AI tutor and `rickroll.mp4` when that file exists in the source repository.
-
-## Local development
-
-Requires Node.js 24+.
+Projektet kan byggas i GitHub Codespaces eller med GitHub Actions.
 
 ```bash
 npm install
-npm start
+npm run sync:web
 ```
 
-## Local desktop package
+### Desktop
 
 ```bash
+npm start
 npm run build:desktop
 ```
 
-## Local Android project/APK
+### Android APK
 
 ```bash
 npm run build:android
 cd android
-./gradlew assembleDebug
+./gradlew assembleDebug --no-daemon
 ```
 
-The GitHub Actions build is the easiest way to obtain platform-specific release artifacts without installing the native toolchains locally.
+APK-resultatet finns normalt här:
 
-## Architecture
+```text
+android/app/build/outputs/apk/debug/app-debug.apk
+```
 
-`electron/` contains the desktop shell.
+## 📖 Build-guider på flera språk
 
-`capacitor.config.ts` configures the Android package as `com.matteskolan.app`.
+- 🇸🇪 [Svenska](docs/README.sv.md)
+- 🇬🇧 [English / Full technical guide](docs/BUILDING.md)
+- 🇩🇪 [Deutsch](docs/README.de.md)
+- 🇪🇸 [Español](docs/README.es.md)
+- 🇫🇷 [Français](docs/README.fr.md)
+- 🇮🇹 [Italiano](docs/README.it.md)
+- 🇵🇱 [Polski](docs/README.pl.md)
+- 🇳🇱 [Nederlands](docs/README.nl.md)
+- 🇧🇷 [Português (Brasil)](docs/README.pt-BR.md)
+- 🇯🇵 [日本語](docs/README.ja.md)
+- 🇨🇳 [简体中文](docs/README.zh-CN.md)
+- 🇷🇺 [Русский](docs/README.ru.md)
 
-`scripts/sync-web.cjs` keeps the app bundle synchronized with the main MatteSkolan repository at build time.
+Den tekniska masterguiden finns i [`docs/BUILDING.md`](docs/BUILDING.md).
 
-`web/` is a small bootstrap directory that is replaced with the synchronized MatteSkolan web app during a build.
+## 🧰 Viktiga krav
+
+- Node.js 24+
+- Java 21 för Android-bygget
+- Android SDK med `platform-tools`, Android API 36 och Build Tools 36.0.0
+- Capacitor 8
+- Electron 44
+- GitHub Codespaces fungerar som rekommenderad browser-baserad byggmiljö
+
+## 📦 Output
+
+GitHub Actions är konfigurerat för separata desktop-outputar:
+
+- Windows: NSIS + portable
+- Linux: AppImage + Debian package
+- macOS: DMG
+- Android: separat debug APK
+
+## 🏗️ Arkitektur
+
+- `electron/` – desktop-skalet
+- `capacitor.config.ts` – Android-konfiguration (`com.matteskolan.app`)
+- `scripts/sync-web.cjs` – hämtar aktuell webapp från `OskarFisk/matte-skolan`
+- `web/` – synkroniserad webapp
+- `docs/` – flerspråkig bygg- och felsökningsdokumentation
+- `android/` – genererat Capacitor Android-projekt
+
+## ⚠️ Felsökning
+
+### TypeScript saknas
+
+```bash
+npm install -D typescript
+npm run build:android
+```
+
+### `Unsupported class file major version 69`
+
+Byt till Java 21. Java 25 kan ge detta fel med projektets Gradle/Groovy-kedja.
+
+### `SDK location not found`
+
+Kontrollera `ANDROID_HOME`, installera rätt Android SDK-paket och skapa `android/local.properties` med:
+
+```text
+sdk.dir=/home/codespace/Android/Sdk
+```
+
+Använd din faktiska sökväg om den skiljer sig.
+
+### `android/` finns redan
+
+Kör:
+
+```bash
+npx cap sync android
+```
+
+Kör inte `npx cap add android` igen om plattformen redan finns.
+
+## 🔐 APK-information
+
+`app-debug.apk` är en debug-version av appen. För en publik release bör projektet byggas med en skyddad release-signering och lämplig versionshantering.
+
+## 🔄 Synkronisering
+
+Build-scriptet synkroniserar den aktuella offentliga webappen från `OskarFisk/matte-skolan` vid build. Om webbrepot ändras behöver appen byggas om för att få de nya ändringarna.
