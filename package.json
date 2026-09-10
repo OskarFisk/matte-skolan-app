@@ -1,0 +1,52 @@
+{
+  "name": "matte-skolan-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MatteSkolan desktop app and Android APK wrapper",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "sync:web": "node scripts/sync-web.cjs",
+    "start": "npm run sync:web && electron .",
+    "build:desktop": "npm run sync:web && electron-builder",
+    "build:android": "npm run sync:web && npx cap add android && npx cap sync android"
+  },
+  "devDependencies": {
+    "electron": "44.3.0",
+    "electron-builder": "26.15.3"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.1",
+    "@capacitor/core": "8.5.1"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=24"
+    }
+  },
+  "build": {
+    "appId": "com.matteskolan.app",
+    "productName": "MatteSkolan",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "web/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"]
+    },
+    "mac": {
+      "target": ["dmg"]
+    }
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
